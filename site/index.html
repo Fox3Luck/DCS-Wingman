@@ -1,0 +1,323 @@
+<title>DCS Wingman</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: full-width navy bands, 1100px inner column, directory table as the centerpiece. */
+  :root {
+    --bg: #0a0e1a;          /* page ground, Fox3 deep navy */
+    --band: #0f1629;        /* alternate band */
+    --panel: #151d38;       /* cards, table rows */
+    --line: #243156;        /* rules and borders */
+    --fg: #e5e7eb;          /* body text */
+    --muted: #9ca3af;       /* secondary text */
+    --accent: #ef4444;      /* Fox3 red, used sparingly */
+    --accent-deep: #b91c1c;
+    --ok: #34d399;          /* online dot */
+    --font-head: "Barlow", "Arial Narrow", Arial, sans-serif;
+    --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    color-scheme: dark;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg: #f6f7fb; --band: #eceef5; --panel: #ffffff; --line: #d3d8e6;
+      --fg: #0f172a; --muted: #4b5563; --accent: #dc2626; --accent-deep: #991b1b; --ok: #059669;
+      color-scheme: light;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7fb; --band: #eceef5; --panel: #ffffff; --line: #d3d8e6;
+    --fg: #0f172a; --muted: #4b5563; --accent: #dc2626; --accent-deep: #991b1b; --ok: #059669;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+  a { color: inherit; }
+  h1, h2, h3 { font-family: var(--font-head); text-wrap: balance; margin: 0; line-height: 1.1; }
+  h1 { font-size: clamp(2.4rem, 6vw, 4.25rem); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; }
+  h2 { font-size: clamp(1.6rem, 3.2vw, 2.25rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; }
+  h3 { font-size: 1.2rem; font-weight: 700; }
+  p { margin: 0; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .band { padding-block: 64px; }
+  .band.alt { background: var(--band); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .eyebrow { font-family: var(--font-head); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.8rem; color: var(--accent); }
+  .lede { color: var(--muted); font-size: 1.125rem; max-width: 62ch; }
+  .stack { display: grid; gap: 16px; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.95rem; padding: 12px 20px; border-radius: 4px; text-decoration: none; border: 1px solid transparent; }
+  .btn.primary { background: var(--accent); color: #fff; }
+  .btn.primary:hover { background: var(--accent-deep); }
+  .btn.ghost { border-color: var(--line); color: var(--fg); }
+  .btn.ghost:hover { border-color: var(--muted); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* nav */
+  nav { border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+  nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; flex-wrap: wrap; padding-block: 8px; }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--font-head); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; font-size: 1.15rem; }
+  .brand .chev { width: 26px; height: 26px; flex: none; }
+  nav ul { list-style: none; display: flex; gap: 22px; margin: 0; padding: 0; flex-wrap: wrap; }
+  nav ul a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: 0.95rem; }
+  nav ul a:hover { color: var(--fg); }
+
+  /* hero */
+  .hero { padding-block: 72px 56px; background:
+      radial-gradient(900px 360px at 85% -10%, rgba(239,68,68,0.18), transparent 60%), var(--bg); }
+  .hero .wrap { display: grid; gap: 28px; }
+  .hero .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .stats { display: flex; gap: 28px; flex-wrap: wrap; color: var(--muted); font-size: 0.95rem; }
+  .stats b { font-family: var(--font-head); font-size: 1.5rem; color: var(--fg); font-weight: 700; font-variant-numeric: tabular-nums; display: block; line-height: 1; }
+
+  /* directory */
+  .dir-head { display: flex; justify-content: space-between; align-items: end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .live { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.9rem; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  table { width: 100%; border-collapse: collapse; min-width: 640px; }
+  th, td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-family: var(--font-head); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td .mission { color: var(--muted); font-size: 0.9rem; display: block; }
+  .pill { display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); text-decoration: none; margin-right: 6px; white-space: nowrap; }
+  .pill.discord { border-color: color-mix(in srgb, var(--accent) 50%, var(--line)); color: var(--fg); }
+  .pill:hover { border-color: var(--muted); }
+  .note { color: var(--muted); font-size: 0.9rem; margin-top: 12px; }
+  .example { color: var(--accent); font-weight: 600; }
+
+  /* steps + cards */
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .card .k { font-family: var(--font-head); font-weight: 800; font-size: 2rem; color: var(--accent); line-height: 1; }
+  .card p { color: var(--muted); }
+  code, pre { font-family: var(--font-mono); font-size: 0.9rem; }
+  pre { margin: 0; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 16px; overflow-x: auto; color: var(--fg); line-height: 1.6; }
+  .cmd { color: var(--accent); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; align-items: start; }
+  .two > * { min-width: 0; }
+  ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 10px; color: var(--muted); }
+  ol.steps b { color: var(--fg); }
+
+  /* footer */
+  footer { border-top: 1px solid var(--line); padding-block: 40px; color: var(--muted); font-size: 0.95rem; }
+  footer .wrap { display: grid; gap: 20px; }
+  .sponsor { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+  .sponsor b { color: var(--fg); font-family: var(--font-head); text-transform: uppercase; letter-spacing: 0.06em; }
+  .sponsor a { color: var(--fg); }
+  footer .links { display: flex; gap: 18px; flex-wrap: wrap; }
+  @media (prefers-reduced-motion: no-preference) { .dot { animation: pulse 2.4s ease-in-out infinite; } }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--ok) 10%, transparent); } }
+</style>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="DCS Wingman home">
+      <svg class="chev" viewBox="0 0 26 26" aria-hidden="true"><path d="M2 20 L13 4 L24 20 L13 15 Z" fill="var(--accent)"/></svg>
+      DCS Wingman
+    </a>
+    <ul>
+      <li><a href="#servers">Servers</a></li>
+      <li><a href="#pilots">Pilots</a></li>
+      <li><a href="#owners">Server owners</a></li>
+      <li><a href="#privacy">Privacy</a></li>
+      <li><a href="https://github.com/Fox3Luck/DCS-Wingman">GitHub</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="stack">
+      <span class="eyebrow">Free and open source for DCS World</span>
+      <h1>Find your wingman again.</h1>
+      <p class="lede">You flew two hours with a stranger, saved each other twice, and the mission ended. DCS has no friend list. DCS Wingman adds one: friend the pilots you fly with, see which server they are on tonight, and find the Discord that goes with it. No account. No install for the basics.</p>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#pilots">How pilots use it</a>
+      <a class="btn ghost" href="#owners">Add it to your server</a>
+    </div>
+    <div class="stats" id="stats">
+      <div><b id="st-servers">0</b>servers reporting now</div>
+      <div><b id="st-pilots">0</b>pilots online on them</div>
+      <div><b id="st-friends">0</b>wingman pairs made</div>
+    </div>
+  </div>
+</header>
+
+<section class="band" id="servers">
+  <div class="wrap">
+    <div class="dir-head">
+      <div class="stack" style="gap:6px">
+        <span class="eyebrow">Live directory</span>
+        <h2>Servers flying DCS Wingman right now</h2>
+      </div>
+      <span class="live"><span class="dot" aria-hidden="true"></span><span id="updated">Updating</span></span>
+    </div>
+    <div class="tablewrap">
+      <table aria-describedby="dir-note">
+        <thead><tr><th>Server</th><th>Pilots</th><th>Address</th><th>Community</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="note" id="dir-note">Counts only. Player names never appear here. A server drops off the list five minutes after its last report.</p>
+  </div>
+</section>
+
+<section class="band alt" id="how">
+  <div class="wrap stack" style="gap:28px">
+    <div class="stack" style="gap:6px">
+      <span class="eyebrow">How it works</span>
+      <h2>Three parts. Each one useful on its own.</h2>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <span class="k">Server</span>
+        <h3>One Lua file on the dedicated server</h3>
+        <p>Reports who is flying and answers chat commands. Every pilot on that server can use DCS Wingman with nothing installed. Fox3 hosted servers run it by default.</p>
+      </div>
+      <div class="card">
+        <span class="k">Service</span>
+        <h3>Friends, presence, directory</h3>
+        <p>Keeps your friendships and knows which server each friend is on right now. Your DCS identity is stored only as a keyed hash.</p>
+      </div>
+      <div class="card">
+        <span class="k">Client</span>
+        <h3>In-game window with Join buttons</h3>
+        <p>Next up. Friends list in the DCS menu and cockpit, one click to join their server, and an invite to pull a friend into yours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="pilots">
+  <div class="wrap two">
+    <div class="stack" style="gap:14px">
+      <span class="eyebrow">For pilots</span>
+      <h2>Type it in chat. That is the whole install.</h2>
+      <p class="lede">On any server that runs DCS Wingman you get one line when you connect. From there it is chat commands. You can only friend a pilot who is on the same server as you at that moment, and they have to friend you back. That rule is what keeps spam out.</p>
+      <ol class="steps">
+        <li><b>Fly with someone.</b> Same server, same session.</li>
+        <li><b>-friend their name.</b> They get a private line asking them to confirm.</li>
+        <li><b>Next week, -friends.</b> You see which server they are on and go there.</li>
+      </ol>
+    </div>
+    <pre><span class="cmd">-wingman</span>            help
+<span class="cmd">-friend</span> &lt;name&gt;      friend a pilot on this server right now
+<span class="cmd">-friends</span>            your friends and where they are flying
+<span class="cmd">-unfriend</span> &lt;name&gt;    remove a friend
+<span class="cmd">-wingman off</span> | on   hide or show your presence
+
+&gt; -friends
+Rez: Contention Gulf (blue)
+Plasma: Gray Flag Syria (red)
+Birdman: offline</pre>
+  </div>
+</section>
+
+<section class="band alt" id="owners">
+  <div class="wrap two">
+    <div class="stack" style="gap:14px">
+      <span class="eyebrow">For server owners</span>
+      <h2>Give your pilots a way back to each other.</h2>
+      <p class="lede">One file in Scripts\Hooks, one config, one restart. Your server appears in the directory with its Discord invite and SRS address, so the new pilot who landed on your server tonight can actually find your community tomorrow.</p>
+      <ol class="steps">
+        <li><b>Register</b> your server and receive a key.</li>
+        <li><b>Copy</b> DCS-Wingman-Reporter.lua into Saved Games\DCS.server\Scripts\Hooks.</li>
+        <li><b>Fill in</b> Config\dcs-wingman.cfg with the service address and your key.</li>
+        <li><b>Restart</b> and look for the WINGMAN line in dcs.log.</li>
+      </ol>
+      <div class="cta" style="display:flex;gap:12px;flex-wrap:wrap">
+        <a class="btn primary" href="https://github.com/Fox3Luck/DCS-Wingman/blob/main/hooks/server/INSTALL.md">Install guide</a>
+        <a class="btn ghost" href="https://github.com/Fox3Luck/DCS-Wingman">Source on GitHub</a>
+      </div>
+    </div>
+    <pre>-- Saved Games\DCS.server\Config\dcs-wingman.cfg
+return {
+  api_url         = "http://wingman-api.fox3cloud.com",
+  server_key      = "wsk_................................",
+  enabled         = true,
+  report_interval = 60,
+}
+
+-- dcs.log after restart
+INFO  WINGMAN: DCS-Wingman-Reporter 0.1.0 loaded</pre>
+  </div>
+</section>
+
+<section class="band" id="privacy">
+  <div class="wrap stack" style="gap:24px">
+    <div class="stack" style="gap:6px">
+      <span class="eyebrow">Privacy</span>
+      <h2>Built so we cannot leak what we do not hold.</h2>
+    </div>
+    <div class="grid3">
+      <div class="card"><h3>Hashed identity</h3><p>Your DCS UCID is run through a keyed hash before anything is stored. The raw value is never written to the database.</p></div>
+      <div class="card"><h3>Reversible presence</h3><p>-wingman off hides you from friends and deletes your current location. -wingman on brings it back.</p></div>
+      <div class="card"><h3>Counts, not names</h3><p>The public directory shows how many pilots are on a server, never who. Friends see each other and nobody else.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sponsor">
+      <svg width="28" height="28" viewBox="0 0 26 26" aria-hidden="true"><path d="M2 20 L13 4 L24 20 L13 15 Z" fill="var(--accent)"/></svg>
+      <div><b>Sponsored by Fox3 Managed Solutions</b><br>Managed DCS and IL-2 server hosting. <a href="https://fox3servers.com">fox3servers.com</a></div>
+    </div>
+    <p>DCS Wingman is independent, free for every pilot and every server, and MIT licensed. It is a community project and is not affiliated with Eagle Dynamics. DCS World is a trademark of Eagle Dynamics SA.</p>
+    <div class="links">
+      <a href="https://github.com/Fox3Luck/DCS-Wingman">GitHub</a>
+      <a href="https://github.com/Fox3Luck/DCS-Wingman/blob/main/hooks/server/INSTALL.md">Server install</a>
+      <a href="https://github.com/Fox3Luck/DCS-Wingman/blob/main/docs/DESIGN.md">Design and roadmap</a>
+      <a href="https://fox3servers.com">Fox3 Servers</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var SAMPLE = {
+    generated_at: Math.floor(Date.now() / 1000),
+    servers: [
+      { name: "Contention Gulf (example)", address: "203.0.113.10:10308", mission: "Contention Persian Gulf v3", players: 41, max_players: 64, discord_url: "https://discord.gg/example", srs: "203.0.113.10:5002", website: null },
+      { name: "Gray Flag Syria (example)", address: "203.0.113.22:10308", mission: "Gray Flag Night Ops", players: 27, max_players: 60, discord_url: "https://discord.gg/example", srs: "203.0.113.22:5002", website: null },
+      { name: "Fox3 ATL-254 (example)", address: "203.0.113.54:10308", mission: "Foothold Caucasus", players: 12, max_players: 32, discord_url: "https://discord.gg/example", srs: "203.0.113.54:5002", website: "https://fox3servers.com" },
+      { name: "4YA Training (example)", address: "203.0.113.77:10308", mission: "Through the Inferno", players: 9, max_players: 40, discord_url: "https://discord.gg/example", srs: null, website: null }
+    ]
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"})[c]; }); }
+  function render(data, isExample) {
+    var rows = data.servers.map(function (s) {
+      var pills = "";
+      if (s.discord_url) pills += '<a class="pill discord" href="' + esc(s.discord_url) + '">Discord</a>';
+      if (s.srs) pills += '<span class="pill" title="SimpleRadio address">SRS ' + esc(s.srs) + '</span>';
+      if (s.website) pills += '<a class="pill" href="' + esc(s.website) + '">Website</a>';
+      return "<tr><td><strong>" + esc(s.name) + "</strong>" + (s.mission ? '<span class="mission">' + esc(s.mission) + "</span>" : "") + "</td>" +
+        '<td class="num">' + esc(s.players) + (s.max_players ? " / " + esc(s.max_players) : "") + "</td>" +
+        '<td><code>' + esc(s.address || "") + "</code></td><td>" + (pills || '<span class="pill">unclaimed</span>') + "</td></tr>";
+    }).join("");
+    if (!rows) rows = '<tr><td colspan="4">No servers are reporting right now.</td></tr>';
+    $("rows").innerHTML = rows;
+    var pilots = data.servers.reduce(function (n, s) { return n + (s.players || 0); }, 0);
+    $("st-servers").textContent = data.servers.length;
+    $("st-pilots").textContent = pilots;
+    $("updated").innerHTML = isExample
+      ? '<span class="example">Example data</span> shown until the service is reachable'
+      : "Updated " + new Date(data.generated_at * 1000).toLocaleTimeString();
+  }
+  function load() {
+    var ctl = ("AbortController" in window) ? new AbortController() : null;
+    if (ctl) setTimeout(function () { ctl.abort(); }, 4000);
+    fetch("/v1/servers", { signal: ctl ? ctl.signal : undefined })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { render(d, false); return fetch("/v1/stats").then(function (r) { return r.json(); }); })
+      .then(function (s) { if (s && typeof s.friendships === "number") $("st-friends").textContent = s.friendships; })
+      .catch(function () { render(SAMPLE, true); $("st-friends").textContent = "0"; });
+  }
+  load();
+  setInterval(load, 60000);
+})();
+</script>

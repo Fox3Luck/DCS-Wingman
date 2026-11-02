@@ -1,0 +1,23 @@
+# systemd unit for the DCS Wingman presence service.
+# Secrets live in /etc/dcs-wingman/env (mode 0600), never in this file.
+[Unit]
+Description=DCS Wingman presence service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=wingman
+Group=wingman
+WorkingDirectory=/opt/dcs-wingman/service
+EnvironmentFile=/etc/dcs-wingman/env
+ExecStart=/opt/dcs-wingman/service/.venv/bin/uvicorn wingman_service.asgi:app --host 127.0.0.1 --port 8600 --proxy-headers
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/lib/dcs-wingman
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

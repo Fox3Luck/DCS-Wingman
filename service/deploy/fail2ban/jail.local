@@ -1,0 +1,50 @@
+# DCS Wingman fail2ban jails.
+# sshd: effective as-is (SSH is reached directly over the admin network). It reads the
+# journal.
+# nginx jails: they read the nginx log files (backend auto), and nginx has already
+# restored the real client address from CF-Connecting-IP, so the counted offender is
+# the real client. Connections still arrive from cloudflared on loopback, so an
+# iptables ban cannot stop them. The ban must happen at the Cloudflare edge: set the
+# cloudflare-token action once a scoped API token (Zone Firewall Services: Edit)
+# exists in /etc/fail2ban/cloudflare.env. Until then nginx jails log and count only.
+#
+# ignoreip here covers loopback only. Add your operator addresses in a local drop-in
+# (for example /etc/fail2ban/jail.d/operators.local with "[DEFAULT]\nignoreip = ...")
+# so a fat-fingered key never locks the operators out; keep that file out of git.
+[DEFAULT]
+backend = auto
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+ignoreip = 127.0.0.1/8 ::1
+
+[sshd]
+enabled = true
+backend = systemd
+mode = aggressive
+maxretry = 3
+bantime = 24h
+
+[nginx-http-auth]
+enabled = true
+logpath = /var/log/nginx/error.log
+
+[nginx-botsearch]
+enabled = true
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 24h
+
+[nginx-limit-req]
+enabled = true
+logpath = /var/log/nginx/error.log
+maxretry = 10
+findtime = 1m
+
+[nginx-traversal]
+enabled = true
+port = http,https
+filter = nginx-traversal
+logpath = /var/log/nginx/access.log
+maxretry = 2
+bantime = 7d

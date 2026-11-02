@@ -1,0 +1,9 @@
+-- DCS Wingman reporter config. Copy to Saved Games\<DCS>\Config\dcs-wingman.cfg
+-- Plain ASCII, Lua syntax. Restart DCS after editing.
+return {
+  api_url         = "http://wingman-api.fox3cloud.com",  -- public DCS Wingman service (http only; DCS Lua has no TLS)
+  server_key      = "wsk_replace_me",                   -- issued when your server is registered
+  enabled         = true,
+  report_interval = 60,                                 -- seconds, minimum 15
+  http_timeout    = 3,                                  -- seconds per request
+}
