@@ -11,6 +11,7 @@ Eagle Dynamics.
 
 **Live:** directory and site at https://wingman.fox3cloud.com. Server hooks report to
 `http://wingman-api.fox3cloud.com` (plain HTTP on purpose: DCS Lua has no TLS).
+Launch announcement: https://fox3servers.com/blog/dcs-wingman-announcement
 
 ## How it works
 

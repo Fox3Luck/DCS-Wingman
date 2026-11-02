@@ -59,6 +59,7 @@ of heads-up, tell me and we will adjust.
 - [ ] GitHub `Fox3Luck/DCS-Wingman` public, release zip for server owners
 - [ ] DCS User Files upload (Utilities category)
 - [ ] ED forum thread (Mods and Apps), Hoggit wiki page, r/hoggit post
+- [x] Launch blog post published 2026-11-02: https://fox3servers.com/blog/dcs-wingman-announcement
 - [ ] Fox3 customer notice (Discord announcements + email): what it is, how to
       opt out, privacy summary
 - [ ] Red Shack episode scheduled
